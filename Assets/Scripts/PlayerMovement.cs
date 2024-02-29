@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -59,6 +60,18 @@ public class PlayerMovement : MonoBehaviour
         velocity = ClampVector3(velocity, -maxSpeed, maxSpeed);
         characterController.Move(velocity);
         previousVelocity = velocity;
+
+
+
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = transform.position.y;
+        Vector3 objectPos = Camera.main.WorldToScreenPoint(transform.position);
+        mousePos.x = mousePos.x - objectPos.x;
+        mousePos.y = mousePos.y - objectPos.y;
+        float angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, -angle + 90f, 0));
+
+
     }
 
     Vector3 ClampVector3(Vector3 vector, float min, float max)
