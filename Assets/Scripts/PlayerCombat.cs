@@ -8,7 +8,7 @@ public class PlayerCombat : MonoBehaviour, IAttackable
     [SerializeField] float reach;
     Animator animator;
     bool canPunch = true;
-    List<EnemyAI> enemies = new List<EnemyAI>();
+    public List<EnemyAI> enemies = new List<EnemyAI>();
 
     // Start is called before the first frame update
     void Start()
@@ -19,12 +19,13 @@ public class PlayerCombat : MonoBehaviour, IAttackable
     // Update is called once per frame
     void Update()
     {
-        float bestDist = 0f;
+        float bestDist = float.MaxValue;
         EnemyAI bestEnemy = null;
         foreach (var enemy in enemies)
         {
             if ((enemy.transform.position - transform.position).magnitude < bestDist)
             {
+                bestDist = (enemy.transform.position - transform.position).magnitude;
                 bestEnemy = enemy;
             }
         }
@@ -71,19 +72,5 @@ public class PlayerCombat : MonoBehaviour, IAttackable
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<EnemyAI>() is EnemyAI enemy)
-        {
-            enemies.Add(enemy);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.GetComponent<EnemyAI>() is EnemyAI enemy)
-        {
-            enemies.Remove(enemy);
-        }
-    }
+    
 }

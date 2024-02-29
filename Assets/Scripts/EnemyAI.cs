@@ -32,7 +32,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
 
         Ray ray = new Ray(transform.position, player.position - transform.position);
         RaycastHit hit;
-        Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
+        
         if (Physics.Raycast(ray, out hit))
         {
             if (hit.collider.gameObject.CompareTag("Player"))
@@ -55,12 +55,20 @@ public class EnemyAI : MonoBehaviour, IAttackable
                             if (attackReactionTime.currentTime == 0f)
                             {
                                 if (hit.collider.GetComponent<IAttackable>() is IAttackable target)
-                                {                    
+                                {
                                     target.OnHit(gameObject);
                                 }
                                 attackReactionTime.Reset();
                             }
                         }
+                        else
+                        {
+                            attackReactionTime.Reset();
+                        }
+                    }
+                    else
+                    {
+                        attackReactionTime.Reset();
                     }
                 }
 
@@ -72,10 +80,19 @@ public class EnemyAI : MonoBehaviour, IAttackable
                 attackReactionTime.Reset();
             }
         }
+        else
+        {
+            Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
+        }
     }
 
     public void OnHit(GameObject instigator)
     {
+        PlayerCombat playerCombat = instigator.GetComponent<PlayerCombat>();
+        if (playerCombat != null)
+        {
+            playerCombat.enemies.Remove(this);
+        }
         gameObject.SetActive(false);
     }
 }
