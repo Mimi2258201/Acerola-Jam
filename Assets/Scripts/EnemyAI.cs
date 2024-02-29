@@ -37,20 +37,23 @@ public class EnemyAI : MonoBehaviour, IAttackable
         {
             if (hit.collider.gameObject.CompareTag("Player"))
             {
+
                 sightReactionTime.Tick(Time.deltaTime);
                 if (sightReactionTime.currentTime == 0f)
                 {
                     // Can see player
                     agent.destination = player.position;
 
+                    Debug.DrawRay(transform.position, player.position - transform.position, Color.blue);
 
-                    Debug.DrawRay(transform.position, transform.forward * reach, Color.red);
+
                     if (Physics.Raycast(transform.position, transform.forward, out hit, reach))
                     {
                         if (hit.collider.CompareTag("Player"))
                         {
                             // Can reach player
 
+                            Debug.DrawRay(transform.position, transform.forward * reach, Color.red);
                             attackReactionTime.Tick(Time.deltaTime);
                             if (attackReactionTime.currentTime == 0f)
                             {
@@ -71,17 +74,20 @@ public class EnemyAI : MonoBehaviour, IAttackable
                         attackReactionTime.Reset();
                     }
                 }
+                else
+                    Debug.DrawRay(transform.position, player.position - transform.position, Color.cyan);
 
             }
             else
             {
-                // Cannot see player
-                sightReactionTime.Reset();
-                attackReactionTime.Reset();
+                // Saw something, but it wasn't the player
             }
         }
         else
         {
+            // Cannot see player
+            sightReactionTime.Reset();
+            attackReactionTime.Reset();
             Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
         }
     }
