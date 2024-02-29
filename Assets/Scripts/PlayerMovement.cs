@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -48,21 +47,23 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movement = movementDir.normalized * speed * Time.deltaTime;
         velocity += movement;
 
+
         // Reduce speed over time
-        if (velocity.magnitude < 0.01f && movementDir.magnitude == 0f)        
+        if (velocity.magnitude < 0.01f && movementDir.magnitude == 0f)
             velocity = Vector3.zero;
         // If close to zero then stop
-        
-        else        
+
+        else
             velocity -= velocity.normalized * resistance * Time.deltaTime;
         
 
         velocity = ClampVector3(velocity, -maxSpeed, maxSpeed);
         characterController.Move(velocity);
+        characterController.Move(Vector3.down * Time.deltaTime);
         previousVelocity = velocity;
 
 
-
+        // Rotation
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = transform.position.y;
         Vector3 objectPos = Camera.main.WorldToScreenPoint(transform.position);
