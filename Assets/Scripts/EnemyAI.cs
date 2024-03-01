@@ -26,7 +26,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
         bool doChase = false;
         bool doAttack;
 
-
+        
 
         Ray ray = new Ray(transform.position, player.position - transform.position);
         RaycastHit hit;
@@ -57,6 +57,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
             else
             {
                 // Saw something, but it wasn't the player
+                sightReactionTime.Reset();
             }
         }
         else

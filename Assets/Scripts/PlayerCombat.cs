@@ -32,16 +32,15 @@ public class PlayerCombat : MonoBehaviour, IAttackable
 
         if (bestEnemy == null) return;
 
-        if (Input.GetMouseButtonDown(0) && canPunch)
+        if (Input.GetMouseButtonDown(0))
         {
-            Debug.DrawRay(transform.position, (bestEnemy.transform.position - transform.position) * reach, Color.red);
             // Do actual raycast here and check for interface
 
             Attack();
 
             Ray ray = new Ray(transform.position, bestEnemy.transform.position - transform.position);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, reach))
+            if (Physics.Raycast(ray, out hit, reach) && canPunch)
             {
                 if (hit.collider.GetComponent<IAttackable>() is IAttackable enemy)
                 {
