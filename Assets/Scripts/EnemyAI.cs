@@ -23,56 +23,32 @@ public class EnemyAI : MonoBehaviour, IAttackable
     // Update is called once per frame
     void Update()
     {
-        // Timers
-        
-        attackReactionTime.Tick(Time.deltaTime);
-        attentionSpan.Tick(Time.deltaTime);
+        bool doChase = false;
+        bool doAttack;
 
 
 
         Ray ray = new Ray(transform.position, player.position - transform.position);
         RaycastHit hit;
         
+        // Ray to player
         if (Physics.Raycast(ray, out hit))
         {
+            // Check if is player
             if (hit.collider.gameObject.CompareTag("Player"))
             {
-
+                // Check for timer
                 sightReactionTime.Tick(Time.deltaTime);
                 if (sightReactionTime.currentTime == 0f)
                 {
                     // Can see player
                     agent.destination = player.position;
+                    doChase = true;
 
                     Debug.DrawRay(transform.position, player.position - transform.position, Color.blue);
 
 
-                    if (Physics.Raycast(transform.position, transform.forward, out hit, reach))
-                    {
-                        if (hit.collider.CompareTag("Player"))
-                        {
-                            // Can reach player
-
-                            Debug.DrawRay(transform.position, transform.forward * reach, Color.red);
-                            attackReactionTime.Tick(Time.deltaTime);
-                            if (attackReactionTime.currentTime == 0f)
-                            {
-                                if (hit.collider.GetComponent<IAttackable>() is IAttackable target)
-                                {
-                                    target.OnHit(gameObject);
-                                }
-                                attackReactionTime.Reset();
-                            }
-                        }
-                        else
-                        {
-                            attackReactionTime.Reset();
-                        }
-                    }
-                    else
-                    {
-                        attackReactionTime.Reset();
-                    }
+                    
                 }
                 else
                     Debug.DrawRay(transform.position, player.position - transform.position, Color.cyan);
@@ -88,7 +64,34 @@ public class EnemyAI : MonoBehaviour, IAttackable
             // Cannot see player
             sightReactionTime.Reset();
             attackReactionTime.Reset();
+            doChase = false;
             Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
+        }
+        // Line of sight
+
+        // Attack raycast
+        if (doChase && (transform.position - player.position).magnitude < reach)
+        {
+            // Can reach player
+
+            Debug.DrawRay(transform.position, transform.forward * reach, Color.red);
+            attackReactionTime.Tick(Time.deltaTime);
+            if (attackReactionTime.currentTime == 0f)
+            {
+                if (player.GetComponent<IAttackable>() is IAttackable target)
+                {
+                    target.OnHit(gameObject);
+                }
+                attackReactionTime.Reset();
+            }
+            
+            
+            attackReactionTime.Reset();
+            
+        }
+        else
+        {
+            attackReactionTime.Reset();
         }
     }
 
