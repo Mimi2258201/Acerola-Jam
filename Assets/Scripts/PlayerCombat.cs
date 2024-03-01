@@ -6,9 +6,11 @@ using UnityEngine.SceneManagement;
 public class PlayerCombat : MonoBehaviour, IAttackable
 {
     [SerializeField] float reach;
+    [SerializeField] LayerMask layerMask;
+
     Animator animator;
     bool canPunch = true;
-    public List<EnemyAI> enemies = new List<EnemyAI>();
+    [HideInInspector] public List<EnemyAI> enemies = new List<EnemyAI>();
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +44,7 @@ public class PlayerCombat : MonoBehaviour, IAttackable
 
             Ray ray = new Ray(transform.position, bestEnemy.transform.position - transform.position);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, reach) && !canPunch)
+            if (Physics.Raycast(ray, out hit, reach, layerMask) && !canPunch)
             {
                 IAttackable enemy = hit.collider.gameObject.GetComponent<IAttackable>();
                 if (enemy != null)

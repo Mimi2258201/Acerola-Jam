@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour, IAttackable
@@ -17,17 +18,13 @@ public class EnemyAI : MonoBehaviour, IAttackable
     // Start is called before the first frame update
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        iTween.Init(gameObject);
+        agent = GetComponent<NavMeshAgent>();        
     }
 
     // Update is called once per frame
     void Update()
     {
         bool doChase = false;
-        bool doAttack;
-
-        
 
         Ray ray = new Ray(transform.position, player.position - transform.position);
         float dist = (player.position - transform.position).magnitude + 0.5f;
@@ -85,12 +82,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
             attackReactionTime.Tick(Time.deltaTime);
             if (attackReactionTime.currentTime == 0f)
             {
-                if (player.GetComponent<IAttackable>() is IAttackable target)
-                {
-                    target.OnHit(gameObject);
-                    Debug.Log("attack");
-                }
-                attackReactionTime.Reset();
+                Attack();
             }
         }
         else
@@ -107,5 +99,16 @@ public class EnemyAI : MonoBehaviour, IAttackable
             playerCombat.enemies.Remove(this);
         }
         gameObject.SetActive(false);
+    }
+
+    protected virtual void Attack()
+    {
+        IAttackable target = player.GetComponent<IAttackable>();
+        if (target != null)
+        {
+            target.OnHit(gameObject);
+            Debug.Log("attack");
+        }
+        attackReactionTime.Reset();
     }
 }
