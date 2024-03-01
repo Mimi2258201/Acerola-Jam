@@ -11,6 +11,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
     public Timer attackReactionTime;
     public Timer attentionSpan;
     [SerializeField] float reach;
+    [SerializeField] LayerMask layerMask;
     NavMeshAgent agent;
 
     // Start is called before the first frame update
@@ -29,10 +30,11 @@ public class EnemyAI : MonoBehaviour, IAttackable
         
 
         Ray ray = new Ray(transform.position, player.position - transform.position);
+        float dist = (player.position - transform.position).magnitude + 0.5f;
         RaycastHit hit;
         
         // Ray to player
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit, dist, layerMask))
         {
             // Check if is player
             if (hit.collider.gameObject.CompareTag("Player"))
@@ -45,28 +47,31 @@ public class EnemyAI : MonoBehaviour, IAttackable
                     agent.destination = player.position;
                     doChase = true;
 
-                    Debug.DrawRay(transform.position, player.position - transform.position, Color.blue);
+                    //Debug.DrawRay(transform.position, player.position - transform.position, Color.blue);
 
 
                     
                 }
                 else
-                    Debug.DrawRay(transform.position, player.position - transform.position, Color.cyan);
+                    Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
 
             }
             else
             {
-                // Saw something, but it wasn't the player
+                // Saw something, but it wasn't the player                
                 sightReactionTime.Reset();
+                attackReactionTime.Reset();
+                doChase = false;
+                //Debug.DrawRay(transform.position, player.position - transform.position, Color.red);
             }
         }
         else
         {
-            // Cannot see player
+            // Cannot see anything
             sightReactionTime.Reset();
             attackReactionTime.Reset();
             doChase = false;
-            Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
+            Debug.DrawRay(transform.position, player.position - transform.position, Color.black);
         }
         // Line of sight
 

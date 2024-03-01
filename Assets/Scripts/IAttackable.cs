@@ -4,8 +4,5 @@ using UnityEngine;
 
 public interface IAttackable
 {
-    public void OnHit(GameObject instigator)
-    {
-
-    }
+    public void OnHit(GameObject instigator);
 }

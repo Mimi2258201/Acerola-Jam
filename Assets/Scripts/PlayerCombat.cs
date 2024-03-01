@@ -30,7 +30,7 @@ public class PlayerCombat : MonoBehaviour, IAttackable
             }
         }
 
-        if (bestEnemy == null) return;
+        
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -38,18 +38,25 @@ public class PlayerCombat : MonoBehaviour, IAttackable
 
             Attack();
 
+            if (bestEnemy == null) return;
+
             Ray ray = new Ray(transform.position, bestEnemy.transform.position - transform.position);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, reach) && canPunch)
+            if (Physics.Raycast(ray, out hit, reach) && !canPunch)
             {
-                if (hit.collider.GetComponent<IAttackable>() is IAttackable enemy)
+                IAttackable enemy = hit.collider.gameObject.GetComponent<IAttackable>();
+                if (enemy != null)
                 {
+                    Debug.DrawRay(transform.position, (bestEnemy.transform.position - transform.position) * reach, Color.blue, 0.2f);
                     enemy.OnHit(gameObject);
+                    Debug.Log("hit");
                 }
+                else
+                    Debug.DrawRay(transform.position, (bestEnemy.transform.position - transform.position) * reach, Color.yellow, 0.2f);
             }
+            else
+                Debug.DrawRay(transform.position, (bestEnemy.transform.position - transform.position) * reach, Color.magenta, 0.2f);
         }
-        else
-            Debug.DrawRay(transform.position, (bestEnemy.transform.position - transform.position) * reach);
     }
 
     void Attack()

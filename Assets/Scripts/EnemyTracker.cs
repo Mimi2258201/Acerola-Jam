@@ -11,15 +11,8 @@ public class EnemyTracker : MonoBehaviour
         playerCombat = transform.parent.GetComponent<PlayerCombat>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.gameObject.name);
         EnemyAI enemy = other.GetComponent<EnemyAI>();
         if (enemy != null)
         {
