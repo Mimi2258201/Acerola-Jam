@@ -67,7 +67,8 @@ public class EnemyAI : MonoBehaviour, IAttackable
         }
         else
         {
-            // Cannot see anything
+            // Cannot see anything - unlikely but just in case, let's not break the AI
+            // AI as in behaviour lol, this isn't generative AI
             sightReactionTime.Reset();
             attackReactionTime.Reset();
             doChase = false;
@@ -87,13 +88,10 @@ public class EnemyAI : MonoBehaviour, IAttackable
                 if (player.GetComponent<IAttackable>() is IAttackable target)
                 {
                     target.OnHit(gameObject);
+                    Debug.Log("attack");
                 }
                 attackReactionTime.Reset();
             }
-            
-            
-            attackReactionTime.Reset();
-            
         }
         else
         {
