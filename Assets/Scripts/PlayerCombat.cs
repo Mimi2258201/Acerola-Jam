@@ -9,7 +9,6 @@ public class PlayerCombat : MonoBehaviour, IAttackable
     [SerializeField] LayerMask layerMask;
 
     Animator animator;
-    bool canPunch = true;
     [HideInInspector] public List<EnemyAI> enemies = new List<EnemyAI>();
 
     // Start is called before the first frame update
@@ -36,15 +35,15 @@ public class PlayerCombat : MonoBehaviour, IAttackable
 
         if (Input.GetMouseButtonDown(0))
         {
-            // Do actual raycast here and check for interface
+            // Attack
 
-            Attack();
+            animator.Play("SimplePunch");
 
             if (bestEnemy == null) return;
 
             Ray ray = new Ray(transform.position, bestEnemy.transform.position - transform.position);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, reach, layerMask) && !canPunch)
+            if (Physics.Raycast(ray, out hit, reach, layerMask))
             {
                 IAttackable enemy = hit.collider.gameObject.GetComponent<IAttackable>();
                 if (enemy != null)
@@ -59,20 +58,6 @@ public class PlayerCombat : MonoBehaviour, IAttackable
             else
                 Debug.DrawRay(transform.position, (bestEnemy.transform.position - transform.position) * reach, Color.magenta, 0.2f);
         }
-    }
-
-    void Attack()
-    {
-        if (canPunch)
-        {
-            animator.Play("SimplePunch");
-            canPunch = false;
-        }
-    }
-
-    public void FinishAttack()
-    {
-        canPunch = true;
     }
 
     public void OnHit(GameObject instigator)
