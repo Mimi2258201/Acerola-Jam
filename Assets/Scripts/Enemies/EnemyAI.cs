@@ -22,7 +22,10 @@ public class EnemyAI : MonoBehaviour, IAttackable
     [SerializeField] LayerMask layerMask;
     NavMeshAgent agent;
 
+    [Header("Variants")]
     public bool doRangedAttack = false;
+
+    protected bool doChase { get; private set; }
 
     // Start is called before the first frame update
     protected virtual void Start()
@@ -36,7 +39,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
     // Update is called once per frame
     protected virtual void Update()
     {
-        bool doChase = false;
+        doChase = false;
         Vector3 lineOfSight = player.position - transform.position;
 
 

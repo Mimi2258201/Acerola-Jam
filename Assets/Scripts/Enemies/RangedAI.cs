@@ -24,6 +24,9 @@ public class RangedAI : EnemyAI
     protected override void Update()
     {
         base.Update();
+        if (doChase)
+            transform.eulerAngles = new Vector3(0f, Quaternion.LookRotation(player.position - transform.position).eulerAngles.y, 0f);
+        
     }
 
     protected override void Attack()
