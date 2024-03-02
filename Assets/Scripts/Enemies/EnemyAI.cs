@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -8,36 +9,60 @@ using static UnityEngine.GraphicsBuffer;
 public class EnemyAI : MonoBehaviour, IAttackable
 {
     public Transform player;
+    [Range(-1f, 1f), Tooltip("At what angle does the enemy start to see you.\n-1 means it can only see something directly infront of it, 0 is 180 vision, and 1 is full 360 vision")]
+    public float FOV = 0.75f;
+
+    [Header("Timings")]
     public Timer sightReactionTime;
     public Timer attackReactionTime;
     public Timer attentionSpan;
+
+    [Header("Attack parameters")]
     [SerializeField] float reach;
     [SerializeField] LayerMask layerMask;
     NavMeshAgent agent;
 
+    public bool doRangedAttack = false;
+
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
-        agent = GetComponent<NavMeshAgent>();        
+        agent = GetComponent<NavMeshAgent>();
+        sightReactionTime = new Timer(sightReactionTime.duration);
+        attackReactionTime = new Timer(attackReactionTime.duration);
+        attentionSpan = new Timer(attentionSpan.duration);
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         bool doChase = false;
+        Vector3 lineOfSight = player.position - transform.position;
 
-        Ray ray = new Ray(transform.position, player.position - transform.position);
-        float dist = (player.position - transform.position).magnitude + 0.5f;
+
+        Ray ray = new Ray(transform.position, lineOfSight);
+        float dist = (lineOfSight).magnitude + 0.5f;
         RaycastHit hit;
         
         // Ray to player
         if (Physics.Raycast(ray, out hit, dist, layerMask))
         {
             // Check if is player
-            if (hit.collider.gameObject.CompareTag("Player"))
+            
+            //This was very useful debug code, apparently I'm bad at judging numbers
+            //if (Vector3.Dot(transform.forward, lineOfSight.normalized) > -FOV)
+            //{
+            //    Debug.Log("Can see you " + Vector3.Dot(transform.forward, lineOfSight.normalized));
+            //}
+            //else
+            //    Debug.Log("no see " + Vector3.Dot(transform.forward, lineOfSight.normalized));
+
+
+            if (hit.collider.gameObject.CompareTag("Player") && Vector3.Dot(transform.forward, lineOfSight.normalized) > -FOV)
             {
                 // Check for timer
                 sightReactionTime.Tick(Time.deltaTime);
+                
                 if (sightReactionTime.currentTime == 0f)
                 {
                     // Can see player
@@ -45,12 +70,9 @@ public class EnemyAI : MonoBehaviour, IAttackable
                     doChase = true;
 
                     //Debug.DrawRay(transform.position, player.position - transform.position, Color.blue);
-
-
-                    
                 }
                 else
-                    Debug.DrawRay(transform.position, player.position - transform.position, Color.magenta);
+                    Debug.DrawRay(transform.position, lineOfSight, Color.magenta);
 
             }
             else
@@ -69,12 +91,12 @@ public class EnemyAI : MonoBehaviour, IAttackable
             sightReactionTime.Reset();
             attackReactionTime.Reset();
             doChase = false;
-            Debug.DrawRay(transform.position, player.position - transform.position, Color.black);
+            Debug.DrawRay(transform.position, lineOfSight, Color.black);
         }
         // Line of sight
-
+        
         // Attack raycast
-        if (doChase && (transform.position - player.position).magnitude < reach)
+        if (doChase && (lineOfSight.magnitude < reach || doRangedAttack))
         {
             // Can reach player
 
