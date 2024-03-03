@@ -21,9 +21,9 @@ public class RangedAI : EnemyAI
     }
 
     // Update is called once per frame
-    protected override void Update()
+    protected override void LateUpdate()
     {
-        base.Update();
+        base.LateUpdate();
         if (doChase)
             transform.eulerAngles = new Vector3(0f, Quaternion.LookRotation(player.position - transform.position).eulerAngles.y, 0f);
         

@@ -8,7 +8,7 @@ using static UnityEngine.GraphicsBuffer;
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour, IAttackable
 {
-    public Transform player;
+    protected Transform player;
     [Range(-1f, 1f), Tooltip("At what angle does the enemy start to see you.\n-1 means it can only see something directly infront of it, 0 is 180 vision, and 1 is full 360 vision")]
     public float FOV = 0.75f;
 
@@ -24,6 +24,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
 
     [Header("Variants")]
     public bool doRangedAttack = false;
+    public GameObject deadBody;
 
     protected bool doChase { get; private set; }
 
@@ -31,13 +32,16 @@ public class EnemyAI : MonoBehaviour, IAttackable
     protected virtual void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        player = FindFirstObjectByType<PlayerCombat>().transform;
         sightReactionTime = new Timer(sightReactionTime.duration);
         attackReactionTime = new Timer(attackReactionTime.duration);
         attentionSpan = new Timer(attentionSpan.duration);
+
+        GetComponent<Animator>().enabled = false;
     }
 
     // Update is called once per frame
-    protected virtual void Update()
+    protected virtual void LateUpdate()
     {
         doChase = false;
         Vector3 lineOfSight = player.position - transform.position;
@@ -123,6 +127,7 @@ public class EnemyAI : MonoBehaviour, IAttackable
         {
             playerCombat.enemies.Remove(this);
         }
+        Instantiate<GameObject>(deadBody, transform.position + Vector3.down, Quaternion.Euler(90f, transform.eulerAngles.y, 0f));
         gameObject.SetActive(false);
     }
 
@@ -132,6 +137,8 @@ public class EnemyAI : MonoBehaviour, IAttackable
         if (target != null)
         {
             target.OnHit(gameObject);
+            //GetComponent<Animator>().enabled = true;
+            //GetComponent<Animator>().Play("SimplePunch");
             Debug.Log("attack");
         }
         attackReactionTime.Reset();
