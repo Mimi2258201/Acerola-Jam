@@ -58,7 +58,7 @@ public class PlayerMovement : MonoBehaviour
         
 
         velocity = ClampVector3(velocity, -maxSpeed, maxSpeed);
-        characterController.Move(velocity);
+        characterController.Move(velocity * Time.deltaTime);
         characterController.Move(Vector3.down * Time.deltaTime);
         previousVelocity = velocity;
 
