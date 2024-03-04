@@ -383,7 +383,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ef3f231416bf44588b96ef39623d7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   FOV: 0.75
   sightReactionTime:
     duration: 0.4
@@ -391,7 +390,7 @@ MonoBehaviour:
     duration: 0.2
   attentionSpan:
     duration: 0.75
-  reach: 1.5
+  reach: 2
   layerMask:
     serializedVersion: 2
     m_Bits: 65
